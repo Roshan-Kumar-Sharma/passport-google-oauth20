@@ -15,7 +15,7 @@ function registerVerifyCallback(accessToken, refreshToken, profile, done) {
     data.forEach((user) => {
         if (
             user.name === profile.displayName ||
-            user.email === profile.json.email
+            user.email === profile._json.email
         ) {
             doesExist = true;
         }
@@ -29,7 +29,7 @@ function loginVerifyCallback(accessToken, refreshToken, profile, done) {
     data.forEach((user) => {
         if (
             user.name === profile.displayName ||
-            user.email === profile.json.email
+            user.email === profile._json.email
         ) {
             doesExist = true;
         }
@@ -54,3 +54,15 @@ passport.use(
         loginVerifyCallback
     )
 );
+
+passport.serializeUser((user, done) => {
+    return done(null, user.id);
+});
+
+passport.deserializeUser((id, done) => {
+    for (let user of data) {
+        console.log(`${JSON.stringify(user)} : ${id}`);
+        if (user.sub === id) return done(null, user);
+    }
+    return done(new Error("user not found"), null);
+});
