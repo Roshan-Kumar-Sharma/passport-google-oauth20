@@ -1,11 +1,11 @@
 const express = require("express");
 const passport = require("passport");
 require("../configs/passport.configs");
+require("../configs/passportjwt.config");
 const data = require("../data");
+const { signAccessToken } = require("../configs/token");
 
 const router = express.Router();
-
-// get
 
 router.get(["/", "/login"], (req, res, next) => {
     res.render("login", { heading: "Login Page" });
@@ -17,27 +17,17 @@ router.get("/register", (req, res, next) => {
 
 router.get(
     "/user/:name",
-    // (req, res, next) => {
-    //     if (req.isAuthenticated()) {
-    //         console.log(true);
-    //         next();
-    //     }
-    //     console.log(false);
-    //     res.redirect("/login");
-    // },
+    passport.authenticate("verifyToken", { session: false }),
     (req, res, next) => {
-        // console.log(req.headers);
-        // if (!req.headers.referer) {
-        //     return res.send(
-        //         "<h1>Dude you need to login to get access for this page."
-        //     );
-        // }
-        console.log(req);
-        res.render("users", {
-            user: `${req.params.name}`,
-            heading: "All users",
-            data: JSON.stringify(data),
-        });
+        if (req.user.name === req.params.name) {
+            console.log(req.user);
+            return res.render("users", {
+                user: `${req.params.name}`,
+                heading: "All users",
+                data: JSON.stringify(data),
+            });
+        }
+        res.redirect("/register");
     }
 );
 
@@ -60,9 +50,8 @@ router.get(
         session: false,
     }),
     (req, res, next) => {
-        console.log(req.user._json);
         data.push(req.user._json);
-        res.redirect(`/user/${req.user._json.name}`);
+        res.send(`${req.user._json.email} has been registered successfully.`);
     }
 );
 
@@ -80,9 +69,16 @@ router.get(
         failureRedirect: "/register",
         session: false,
     }),
-    (req, res, next) => {
-        console.log(req.user._json);
-        res.redirect(`/user/${req.user._json.name}`);
+    async (req, res, next) => {
+        try {
+            console.log(req.user._json);
+            const token = await signAccessToken(req.user);
+            res.cookie("accessToken", token, { httpOnly: true }).send({
+                token,
+            });
+        } catch (err) {
+            next(err);
+        }
     }
 );
 

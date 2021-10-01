@@ -15,7 +15,7 @@ function registerVerifyCallback(accessToken, refreshToken, profile, done) {
     data.forEach((user) => {
         if (
             user.name === profile.displayName ||
-            user.email === profile.json.email
+            user.email === profile._json.email
         ) {
             doesExist = true;
         }
@@ -29,7 +29,7 @@ function loginVerifyCallback(accessToken, refreshToken, profile, done) {
     data.forEach((user) => {
         if (
             user.name === profile.displayName ||
-            user.email === profile.json.email
+            user.email === profile._json.email
         ) {
             doesExist = true;
         }
