@@ -82,4 +82,9 @@ router.get(
     }
 );
 
+router.get("/logout", (req, res, next) => {
+    res.clearCookie("accessToken");
+    res.redirect("/login");
+});
+
 module.exports = router;
