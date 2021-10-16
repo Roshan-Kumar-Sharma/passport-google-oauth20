@@ -7,11 +7,11 @@ function goToRegisterPage() {
 }
 
 async function googleLogin() {
-    location.href = location.origin + "/auth/google/login";
+    location.href = location.origin + "/auth/google?type=login";
 }
 
 function googleRegister() {
-    location.href = location.origin + "/auth/google/register";
+    location.href = location.origin + "/auth/google?type=register";
 }
 
 function callMe() {

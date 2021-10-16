@@ -9,8 +9,8 @@ const options = {
     clientSecret: process.env.CLIENT_SECRET,
 };
 
-function registerVerifyCallback(accessToken, refreshToken, profile, done) {
-    // console.log(profile);
+function registerVerifyCallback(req, accessToken, refreshToken, profile, done) {
+    // console.log(req.state);
     let doesExist = false;
     data.forEach((user) => {
         if (
@@ -24,7 +24,7 @@ function registerVerifyCallback(accessToken, refreshToken, profile, done) {
     else return done(null, profile);
 }
 
-function loginVerifyCallback(accessToken, refreshToken, profile, done) {
+function loginVerifyCallback(req, accessToken, refreshToken, profile, done) {
     let doesExist = false;
     data.forEach((user) => {
         if (
@@ -42,7 +42,11 @@ function loginVerifyCallback(accessToken, refreshToken, profile, done) {
 passport.use(
     "registerWithGoogle",
     new GoogleStrategy(
-        { ...options, callbackURL: process.env.REGISTER_CALLBACK_URL },
+        {
+            ...options,
+            callbackURL: process.env.REGISTER_CALLBACK_URL,
+            passReqToCallback: true,
+        },
         registerVerifyCallback
     )
 );
@@ -50,7 +54,11 @@ passport.use(
 passport.use(
     "loginWithGoogle",
     new GoogleStrategy(
-        { ...options, callbackURL: process.env.LOGIN_CALLBACK_URL },
+        {
+            ...options,
+            callbackURL: process.env.LOGIN_CALLBACK_URL,
+            passReqToCallback: true,
+        },
         loginVerifyCallback
     )
 );

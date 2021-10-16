@@ -35,13 +35,27 @@ router.get("/users", (req, res, next) => {
     res.send(data);
 });
 
-router.get(
-    "/auth/google/register",
-    passport.authenticate("registerWithGoogle", {
+router.get("/auth/google", (req, res, next) => {
+    console.log(req.query);
+    let middleware;
+    const { type } = req.query;
+
+    if (!type || (type !== "login" && type !== "register")) {
+        return res.send("Wrong State");
+    }
+
+    if (type === "register") {
+        middleware = "registerWithGoogle";
+    } else if (type === "login") {
+        middleware = "loginWithGoogle";
+    }
+
+    passport.authenticate(middleware, {
         scope: ["profile", "email"],
         session: false,
-    })
-);
+        state: type,
+    })(req, res, next);
+});
 
 router.get(
     "/auth/google/register/callback",
@@ -50,18 +64,23 @@ router.get(
         session: false,
     }),
     (req, res, next) => {
+        console.log(req.state);
         data.push(req.user._json);
         res.send(`${req.user._json.email} has been registered successfully.`);
     }
 );
 
-router.get(
-    "/auth/google/login",
-    passport.authenticate("loginWithGoogle", {
-        scope: ["profile", "email"],
-        session: false,
-    })
-);
+// router.get(
+//     "/auth/google",
+//     (req, res, next) => {
+//         console.log(req.query);
+//         res.send();
+//     }
+//     // passport.authenticate("loginWithGoogle", {
+//     //     scope: ["profile", "email"],
+//     //     session: false,
+//     // })
+// );
 
 router.get(
     "/auth/google/login/callback",
