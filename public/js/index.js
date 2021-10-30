@@ -14,6 +14,10 @@ function googleRegister() {
     location.href = location.origin + "/auth/google?type=register";
 }
 
+function logout() {
+    location.href = location.origin + "/logout";
+}
+
 function callMe() {
     console.log("index.js");
 }
