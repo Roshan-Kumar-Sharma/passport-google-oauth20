@@ -44,7 +44,7 @@ passport.use(
     new GoogleStrategy(
         {
             ...options,
-            callbackURL: process.env.REGISTER_CALLBACK_URL,
+            callbackURL: process.env.CALLBACK_URL,
             passReqToCallback: true,
         },
         registerVerifyCallback
@@ -56,7 +56,7 @@ passport.use(
     new GoogleStrategy(
         {
             ...options,
-            callbackURL: process.env.LOGIN_CALLBACK_URL,
+            callbackURL: process.env.CALLBACK_URL,
             passReqToCallback: true,
         },
         loginVerifyCallback

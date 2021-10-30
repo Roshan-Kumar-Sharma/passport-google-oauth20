@@ -10,7 +10,7 @@ const options = {
         if (req && req.headers.cookie) {
             token = req.headers.cookie.split("=")[1];
         }
-        console.log(token);
+        // console.log(token);
         return token;
     },
     secretOrKey: process.env.ACCESS_TOKEN_SECRET,
