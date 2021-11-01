@@ -9,6 +9,6 @@ Here, passport-jwt has been used for verifying the jwt token and the token are s
 
 ### googleOauth20-using-session
 
-### googleOauth20-using-state
+### googleOauth20-using-state [with mongodb]
 
 ### *****************************************
