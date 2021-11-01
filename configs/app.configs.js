@@ -3,6 +3,7 @@ const path = require("path");
 const morgan = require("morgan");
 const passport = require("passport");
 const cors = require("cors");
+require("./db");
 
 module.exports = (app) => {
     app.use(

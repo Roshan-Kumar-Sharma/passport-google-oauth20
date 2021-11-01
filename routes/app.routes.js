@@ -4,6 +4,7 @@ require("../configs/passport.configs");
 require("../configs/passportjwt.config");
 const data = require("../data");
 const { signAccessToken } = require("../configs/token");
+const User = require("../configs/dbModel");
 
 const router = express.Router();
 
@@ -18,21 +19,26 @@ router.get("/register", (req, res, next) => {
 router.get(
     "/user/:name",
     passport.authenticate("verifyToken", { session: false }),
-    (req, res, next) => {
+    async (req, res, next) => {
         if (req.user.name === req.params.name) {
-            console.log("verifyToken : ", req.user);
             return res.render("users", {
                 user: `${req.params.name}`,
                 heading: "All users",
-                data: JSON.stringify(data),
+                data: await User.find({}),
             });
         }
         res.redirect("/register");
     }
 );
 
-router.get("/users", (req, res, next) => {
-    res.send(data);
+router.get("/users", async (req, res, next) => {
+    try {
+        const users = await User.find({});
+        console.log(users);
+        res.send(users);
+    } catch (err) {
+        console.log(err.message);
+    }
 });
 
 router.get("/auth/google", (req, res, next) => {
@@ -73,9 +79,12 @@ router.get(
                     session: false,
                 },
                 (err, payload, info) => {
-                    console.log(payload);
                     if (err || !payload) {
-                        return next(info);
+                        return next(
+                            new Error(
+                                "User is already registered. Please login!!!"
+                            )
+                        );
                     }
                     req.login(payload, { session: false }, async (err) => {
                         if (err) return next(err);
@@ -91,9 +100,7 @@ router.get(
                     session: false,
                 },
                 (err, payload, info) => {
-                    console.log(payload);
                     if (err || !payload) {
-                        console.log("user is not regsitered");
                         return next(
                             new Error(
                                 "User is not registered. Register first!!!"
@@ -115,16 +122,11 @@ router.get(
         }
 
         if (state === "register") {
-            console.log("/auth/google/register/callback : ", req.query.state);
-            data.push(req.user._json);
             res.send(
                 `${req.user._json.email} has been registered successfully.`
             );
         } else if (state === "login") {
             try {
-                // console.log
-                console.log("/auth/google/login/callback : ", req.user);
-                console.log("/auth/google/login/callback : ", req.query.state);
                 const token = await signAccessToken(req.user);
                 res.cookie("accessToken", token, { httpOnly: true }).redirect(
                     `/user/${req.user._json.name}`
