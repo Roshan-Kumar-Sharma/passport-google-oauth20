@@ -19,7 +19,7 @@ connection.on("connected", () => {
 });
 
 connection.on("error", (err) => {
-    console.log(err);
+    console.log(err.message);
 });
 
 connection.on("disconnected", () => {
